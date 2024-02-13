@@ -19,29 +19,30 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 export const RegisterForm = () => {
-    const [isPending, startTransition] = useTransition()
-    const [error, setError] = useState<string | undefined>('')
-    const [success, setSuccess] = useState<string | undefined>('')
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | undefined>("");
+    const [success, setSuccess] = useState<string | undefined>("");
 
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
         defaultValues: {
+            name: "",
             email: "",
             password: "",
         },
     });
 
     const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
-        setError("")
-        setSuccess("")
-        startTransition(() => {
+        setError("");
+        setSuccess("");
 
-            register(values).then((data) => {
-                setError(data.error)
-                setSuccess(data.success)
-            })
-        })
+        startTransition(async () => {
+            const data = await register(values);
+            setError(data.error);
+            setSuccess(data.success);
+        });
     };
+    
     return (
         <CardWrapper
             headerLabel="Create an account"
@@ -115,7 +116,7 @@ export const RegisterForm = () => {
                         type="submit"
                         className="w-full"
                         disabled={isPending}
-                        >
+                    >
                         Create an account
                     </Button>
                 </form>
